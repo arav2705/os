@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <unistd.h> 
+
+int main(){
+    int p1[2], p2[2], rs1, rs2, pid;
+    char m1[20], m2[20], rm[20]; 
+    
+    printf ("Enter message to pipe 1: ");
+    scanf ("%s", m1);
+    printf ("Enter message to pipe 2: ");
+    scanf ("%s", m2);
+    
+    rs1 = pipe (p1);
+    rs2 = pipe (p2);
+    
+    if (rs1 == -1){
+        printf ("Failed to create pipe 1");
+        return 1; 
+    }
+    if (rs2 == -1){
+        printf ("Failed to create pipe 2");
+        return 1;
+    }
+    
+    pid = fork ();
+     
+
+
+
+
+
+
+    if (pid != 0){
+        close (p1[0]);
+        close (p2[1]);
+        printf ("In parent - Writing to pipe 1: %s\n", m1); 
+        write (p1[1], m1, sizeof (m1));
+        read (p2[0], rm, sizeof (rm));
+        printf ("In parent - Reading from pipe 2: %s\n", rm);
+    } else {
+        close (p1[1]);
+        close (p2[0]);
+        read (p1[0], rm, sizeof (rm));
+        printf ("In child - Reading from pipe 1: %s\n", rm);
+        printf ("In child - Writing to pipe 2: %s\n", m2);
+        write (p2[1], m2, sizeof (m2));
+    }
+}
